@@ -60,182 +60,145 @@ Verlinke die Quelle(n) korrekt.
 ```
 
 ## OpenAPI Specification für onlinekommentar.ch API
-```openapi
-{
-  "openapi": "3.1.0",
-  "info": {
-    "title": "Onlinekommentar API",
-    "description": "API for accessing commentary data from the Onlinekommentar platform",
-    "version": "1.0.0",
-    "contact": {
-      "url": "https://onlinekommentar.ch"
-    }
-  },
-  "servers": [
-    {
-      "url": "https://onlinekommentar.ch/api",
-      "description": "Production server"
-    }
-  ],
-  "paths": {
-    "/commentaries": {
-      "get": {
-        "summary": "List all published commentaries",
-        "description": "Retrieve a list of all published commentaries with optional filtering, searching, and sorting",
-        "operationId": "listCommentaries",
-        "parameters": [
-          {
-            "name": "language",
-            "in": "query",
-            "description": "Content language",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": ["en", "de", "fr", "it"],
-              "default": "en"
-            }
-          },
-          {
-            "name": "search",
-            "in": "query",
-            "description": "Full-text search query",
-            "required": false,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "legislative_act",
-            "in": "query",
-            "description": "Filter by legislative act ID",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          },
-          {
-            "name": "sort",
-            "in": "query",
-            "description": "Sort order (prefix with - for descending)",
-            "required": false,
-            "schema": {
-              "type": "string",
-              "enum": ["title", "-title", "date", "-date"],
-              "default": "-date"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "description": "Page number for pagination",
-            "required": false,
-            "schema": {
-              "type": "integer",
-              "minimum": 1,
-              "default": 1
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "commentaries": {
-                      "type": "array",
-                      "items": {
-                        "$ref": "#/components/schemas/Commentary"
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Bad request - invalid parameters"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      }
-    },
-    "/commentaries/{id}": {
-      "get": {
-        "summary": "Retrieve a specific commentary by ID",
-        "description": "Get detailed information about a specific commentary",
-        "operationId": "getCommentaryById",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "Commentary ID",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "uuid"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successful response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Commentary"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Commentary not found"
-          },
-          "500": {
-            "description": "Internal server error"
-          }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "Commentary": {
-        "type": "object",
-        "description": "A legal commentary document",
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Unique identifier for the commentary"
-          },
-          "title": {
-            "type": "string",
-            "description": "Title of the commentary"
-          },
-          "date": {
-            "type": "string",
-            "format": "date",
-            "description": "Publication date"
-          },
-          "language": {
-            "type": "string",
-            "enum": ["en", "de", "fr", "it"],
-            "description": "Language of the commentary"
-          },
-          "legislative_act": {
-            "type": "string",
-            "format": "uuid",
-            "description": "Associated legislative act ID"
-          }
-        }
-      }
-    }
-  }
-}
+```yaml
+openapi: 3.1.0
+info:
+  title: Onlinekommentar API
+  description: API for accessing legal commentary data
+  version: 1.0.0
+  contact:
+    url: https://onlinekommentar.ch
+
+servers:
+  - url: https://onlinekommentar.ch/api
+    description: Production server
+
+paths:
+  /commentaries:
+    get:
+      summary: List all published commentaries
+      operationId: listCommentaries
+      parameters:
+        - name: language
+          in: query
+          schema:
+            type: string
+            enum: [en, de, fr, it]
+            default: de
+        - name: search
+          in: query
+          description: Full-text search query
+          schema:
+            type: string
+        - name: legislative_act
+          in: query
+          description: Filter by legislative act ID
+          schema:
+            type: string
+        - name: sort
+          in: query
+          schema:
+            type: string
+            enum: [title, -title, date, -date]
+            default: -date
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  commentaries:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Commentary'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+
+  /commentaries/{id}:
+    get:
+      summary: Get commentary by ID
+      operationId: getCommentary
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentaryDetail'
+        '404':
+          description: Commentary not found
+
+components:
+  schemas:
+    Commentary:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        date:
+          type: string
+          format: date
+        language:
+          type: string
+        legislative_act:
+          type: string
+        legislative_act_title:
+          type: string
+          description: Human-readable name of the legislative act
+        authors:
+          type: array
+          items:
+            type: string
+        abstract:
+          type: string
+          description: Brief summary of the commentary
+    
+    CommentaryDetail:
+      allOf:
+        - $ref: '#/components/schemas/Commentary'
+        - type: object
+          properties:
+            content:
+              type: string
+              description: Full commentary text (HTML or markdown)
+            references:
+              type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    description: Type of reference (case, article, etc.)
+                  citation:
+                    type: string
+                  url:
+                    type: string
+    
+    Pagination:
+      type: object
+      properties:
+        current_page:
+          type: integer
+        total_pages:
+          type: integer
+        total_count:
+          type: integer
+        per_page:
+          type: integer
 ```
