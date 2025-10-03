@@ -1,6 +1,8 @@
 # GPT_Onlinekommentar.ch
 Ein simpler GPT um Onlinekommentar.ch zu durchsuchen.
 
+Link to the GPT: [https://chatgpt.com/g/g-68dbe6b41d488191b6bd0eb3348e4385-onlinekommentar-ch](https://chatgpt.com/g/g-68dbe6b41d488191b6bd0eb3348e4385-onlinekommentar-ch)
+
 ## Prompts (DE/EN)
 
 ### Prompt Deutsch:
